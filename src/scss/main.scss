@@ -46,12 +46,13 @@ p {
 
 a {
   cursor         : pointer;
-  transition     : 0.25s ease-in-out;
+  transition     : 0.25s ease-in-out all;
   text-decoration: none;
   color          : $text-dark;
   @include smart-underline($background-colour, $text-dark, $selection);
   &:hover {
-    opacity: 0.5;
+    // opacity: 0.5;
+    color: $secondary-colour;
   }
 }
 

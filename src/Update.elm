@@ -4,7 +4,6 @@ import Api exposing (getUserInfo, getScrobbleCount)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
-import Types.User exposing (User)
 import Utils exposing (..)
 
 

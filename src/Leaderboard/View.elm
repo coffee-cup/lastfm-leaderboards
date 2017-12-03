@@ -2,23 +2,15 @@ module Leaderboard.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, href, classList, src)
-import Html.Events exposing (onClick)
 import Types.User exposing (User)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
-import ViewUtils exposing (..)
 
 
 view : Model -> Html Msg
 view model =
     div [ class "leaderboards" ]
-        [ h1 [ class "f-subheadline-ns f1 measure mv4 pointer", onClick ShowHome ]
-            [ text "LastFm"
-            , br [] []
-            , text "Leaderboards"
-            ]
-        , errorView model
-        , introView
+        [ introView
         , div [ class "users pv2" ]
             (List.map userView model.users)
         ]

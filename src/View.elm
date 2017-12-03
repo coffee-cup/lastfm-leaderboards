@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, href, classList, placeholder)
+import Html.Attributes exposing (class, href, classList, placeholder, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
@@ -32,7 +32,7 @@ page model =
             aboutView model
 
         LeaderboardRoute _ ->
-            Leaderboard.View.view model
+            leaderboardView model
 
         NotFoundRoute ->
             notFoundView
@@ -42,7 +42,11 @@ header : Model -> Html Msg
 header model =
     div [ class "header bold" ]
         [ div []
-            [ h1 [ class "f-subheadline" ] [ text "LastFm Leaderboards" ]
+            [ h1 [ class "f-subheadline-ns f1 measure mv4 pointer", onClick ShowHome ]
+                [ text "LastFm"
+                , br [] []
+                , text "Leaderboards"
+                ]
             , nameInput model
             ]
         ]
@@ -52,7 +56,12 @@ nameInput : Model -> Html Msg
 nameInput model =
     form [ onSubmit ShowLeaderboard ]
         [ div [ class "user-input input-group input-group--rightButton" ]
-            [ input [ placeholder "Enter lastfm usernames separated by a comma", onInput UsersStringChange ] []
+            [ input
+                [ placeholder "Enter lastfm usernames separated by a comma"
+                , onInput UsersStringChange
+                , value model.usersString
+                ]
+                [ text model.usersString ]
             , button [ class "button button--primary" ] [ text "Go" ]
             ]
         ]
@@ -61,19 +70,21 @@ nameInput model =
 footer : Html Msg
 footer =
     div [ class "footer pb6" ]
-        [ p [ class "f1" ]
-            [ a [ onClick ShowHome, class "dim none pointer" ] [ text "♥" ]
+        [ p [ class "f5" ]
+            [ text "made with ♥ by "
+            , a [ href "https://jakerunzer.com", class "pointer" ]
+                [ text "jake runzer" ]
             ]
         ]
 
 
 
--- Sample Routes
+-- Routes
 
 
 homeView : Model -> Html Msg
 homeView model =
-    div []
+    div [ class "full vertical-center" ]
         [ header model
         ]
 
@@ -84,6 +95,14 @@ aboutView model =
         [ headingLarge "About"
         , p [ class "measure" ] [ text "About this site." ]
         , a [ onClick ShowHome, class "f1 none dim" ] [ text "←" ]
+        ]
+
+
+leaderboardView : Model -> Html Msg
+leaderboardView model =
+    div [ class "leaderboard" ]
+        [ header model
+        , Leaderboard.View.view model
         ]
 
 
