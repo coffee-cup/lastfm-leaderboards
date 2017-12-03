@@ -1,0 +1,8 @@
+.user {
+  &-image {
+    --image-size : 4rem;
+    max-width    : var(--image-size);
+    max-height   : var(--image-size);
+    border-radius: 180%;
+  }
+}

@@ -2,7 +2,7 @@ module View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, href, classList, placeholder)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (Sitemap(..))
@@ -42,7 +42,7 @@ header : Model -> Html Msg
 header model =
     div [ class "header bold" ]
         [ div []
-            [ h1 [ class "f-subheadline" ] [ text "Lastfm Leaderboards" ]
+            [ h1 [ class "f-subheadline" ] [ text "LastFm Leaderboards" ]
             , nameInput model
             ]
         ]
@@ -50,16 +50,18 @@ header model =
 
 nameInput : Model -> Html Msg
 nameInput model =
-    div [ class "user-input input-group input-group--rightButton" ]
-        [ input [ placeholder "Enter lastfm usernames separated by a comma", onInput ShowLeaderboard ] []
-        , button [] [ text "Go" ]
+    form [ onSubmit ShowLeaderboard ]
+        [ div [ class "user-input input-group input-group--rightButton" ]
+            [ input [ placeholder "Enter lastfm usernames separated by a comma", onInput UsersStringChange ] []
+            , button [ class "button button--primary" ] [ text "Go" ]
+            ]
         ]
 
 
 footer : Html Msg
 footer =
-    div [ class "footer pb4" ]
-        [ p [ class "f5" ]
+    div [ class "footer pb6" ]
+        [ p [ class "f1" ]
             [ a [ onClick ShowHome, class "dim none pointer" ] [ text "♥" ]
             ]
         ]

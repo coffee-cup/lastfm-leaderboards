@@ -28,7 +28,7 @@ leaderboardR =
 
 sitemap : Route.Router Sitemap
 sitemap =
-    router [ homeR, aboutR ]
+    router [ homeR, aboutR, leaderboardR ]
 
 
 removeTrailingSlash : String -> String
@@ -65,7 +65,7 @@ toString r =
 
 mainTitle : String
 mainTitle =
-    "Title ✌️"
+    "LastFm Leaderboards"
 
 
 pageTitle : Sitemap -> String
@@ -75,10 +75,10 @@ pageTitle r =
             mainTitle
 
         AboutRoute ->
-            mainTitle ++ " - About"
+            "About | " ++ mainTitle
 
         LeaderboardRoute usersString ->
-            usersString
+            usersString ++ " | " ++ mainTitle
 
         NotFoundRoute ->
             "Not Found"

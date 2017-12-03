@@ -14,7 +14,17 @@ input,
 
 button,
 .button {
-  border: solid 2px $main-colour;
+  min-width : 4rem;
+  border    : solid 2px $main-colour;
+  transition: 250ms ease-out box-shadow;
+
+  &:hover {
+    box-shadow: 5px 5px 0px 0px $secondary-colour;
+  }
+
+  &--primary {
+    background-color: $accent-colour;
+  }
 }
 
 .input-group {
