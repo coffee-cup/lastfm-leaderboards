@@ -1,0 +1,28 @@
+input,
+button {
+  border-radius     : 0;
+  -webkit-appearance: none;
+  outline           : none;
+}
+
+input,
+.input {
+  width  : 100%;
+  padding: 1rem;
+  border : solid 2px $main-colour;
+}
+
+button,
+.button {
+  border: solid 2px $main-colour;
+}
+
+.input-group {
+  display: flex;
+
+  &--rightButton {
+    input {
+      border-right: none;
+    }
+  }
+}
