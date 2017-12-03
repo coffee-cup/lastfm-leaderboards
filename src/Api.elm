@@ -1,4 +1,4 @@
-module Api exposing (getUserInfo)
+module Api exposing (getUserInfo, getScrobbleCount)
 
 import Http
 import Json.Decode as Decode exposing (..)
@@ -9,7 +9,7 @@ import Types.User exposing (User)
 
 type Route
     = UserInfo String
-    | RecentTracks
+    | RecentTracks User
 
 
 type alias ApiKey =
@@ -24,6 +24,12 @@ getUserInfo : ApiKey -> String -> Cmd Msg
 getUserInfo apiKey name =
     Http.get (routeToString apiKey (UserInfo name)) decodeUserInfo
         |> Http.send OnFetchUser
+
+
+getScrobbleCount : ApiKey -> User -> Cmd Msg
+getScrobbleCount apiKey user =
+    Http.get (routeToString apiKey (RecentTracks user)) decodeRecentTracks
+        |> Http.send (OnFetchRecentTracks user)
 
 
 apiUrl : String
@@ -52,8 +58,20 @@ routeToString apiKey route =
             in
                 apiUrl ++ queryParams
 
-        _ ->
-            ""
+        RecentTracks user ->
+            let
+                queryParams =
+                    queryParamBuilder
+                        [ ( "method", "user.getRecentTracks" )
+                        , ( "format", "json" )
+                        , ( "api_key", apiKey )
+                        , ( "limit", "200" )
+                        , ( "page", "1" )
+                        , ( "user", user.name )
+                        , ( "from", "1509578304" )
+                        ]
+            in
+                apiUrl ++ queryParams
 
 
 
@@ -67,3 +85,29 @@ decodeUserInfo =
             |: (at [ "image" ] <| index 2 <| field "#text" string)
             |: (field "name" string)
             |: (succeed Nothing)
+
+
+decodeRecentTracks : Decoder Int
+decodeRecentTracks =
+    at [ "recenttracks", "@attr" ] <|
+        (field "total" number)
+
+
+number : Decoder Int
+number =
+    oneOf [ int, string |> customDecoder String.toInt ]
+
+
+eitherR : (x -> b) -> (a -> b) -> Result x a -> b
+eitherR fErr fOk result =
+    case result of
+        Err x ->
+            fErr x
+
+        Ok a ->
+            fOk a
+
+
+customDecoder : (a -> Result String b) -> Decoder a -> Decoder b
+customDecoder fResult decoder =
+    decoder |> andThen (fResult >> eitherR fail succeed)

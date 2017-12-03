@@ -12,4 +12,4 @@ type Msg
     | ShowLeaderboard
     | UsersStringChange String
     | OnFetchUser (Result Http.Error User)
-    | OnFetchRecentTracks (Result Http.Error User)
+    | OnFetchRecentTracks User (Result Http.Error Int)

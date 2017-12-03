@@ -1,9 +1,11 @@
 port module Update exposing (..)
 
-import Api exposing (getUserInfo)
+import Api exposing (getUserInfo, getScrobbleCount)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
+import Types.User exposing (User)
+import Utils exposing (..)
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -64,10 +66,25 @@ update msg model =
                 ( { model | users = [] }, Cmd.batch commands )
 
         OnFetchUser (Ok user) ->
-            ( { model | users = user :: model.users }, Cmd.none )
+            ( { model | users = user :: model.users }, getScrobbleCount model.flags.apiKey user )
 
         OnFetchUser (Err _) ->
             ( { model | error = "Error fetching user" }, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+        OnFetchRecentTracks user (Ok playcount) ->
+            let
+                newUsers =
+                    model.users
+                        |> List.map
+                            (\u ->
+                                if u.name == user.name then
+                                    { u | playcount = Just playcount }
+                                else
+                                    u
+                            )
+                        |> sortByFlip (\u -> Maybe.withDefault 0 u.playcount)
+            in
+                ( { model | users = newUsers }, Cmd.none )
+
+        OnFetchRecentTracks _ _ ->
+            ( { model | error = "Error fetching recent tracks" }, Cmd.none )

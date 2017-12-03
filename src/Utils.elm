@@ -17,3 +17,21 @@ boolToInt b =
 
         False ->
             0
+
+
+sortByFlip : (a -> comparable) -> List a -> List a
+sortByFlip f l =
+    List.sortWith (\a b -> flippedComparison (f a) (f b)) l
+
+
+flippedComparison : comparable -> comparable -> Order
+flippedComparison a b =
+    case compare a b of
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT
