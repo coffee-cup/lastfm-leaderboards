@@ -1,5 +1,19 @@
 module Utils exposing (..)
 
+import Routing exposing (Sitemap(..))
+
+
+routeToUsersString : Sitemap -> String
+routeToUsersString sitemap =
+    case sitemap of
+        LeaderboardRoute usersString ->
+            usersString
+                |> String.split "+"
+                |> String.join ", "
+
+        _ ->
+            ""
+
 
 classify : String -> String
 classify s =

@@ -3,6 +3,7 @@ module Models exposing (..)
 import Routing exposing (Sitemap(..))
 import Flags exposing (Flags)
 import Types.User exposing (User)
+import Utils exposing (routeToUsersString)
 
 
 type alias Model =
@@ -22,15 +23,3 @@ initialModel flags sitemap =
     , users = []
     , error = ""
     }
-
-
-routeToUsersString : Sitemap -> String
-routeToUsersString sitemap =
-    case sitemap of
-        LeaderboardRoute usersString ->
-            usersString
-                |> String.split "+"
-                |> String.join ", "
-
-        _ ->
-            ""

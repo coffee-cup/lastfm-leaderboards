@@ -33,8 +33,17 @@ update msg model =
             let
                 newRoute =
                     parseLocation location
+
+                newUsersString =
+                    routeToUsersString newRoute
+
+                newModel =
+                    { model | usersString = newUsersString, users = [] }
+
+                usersCommands =
+                    getUserInfoCommands newModel
             in
-                ( { model | route = newRoute }, Cmd.none )
+                ( { newModel | route = newRoute }, usersCommands )
 
         ShowHome ->
             ( model, changePage HomeRoute )
@@ -55,14 +64,8 @@ update msg model =
 
                 plusString =
                     usersList |> String.join "+"
-
-                usersCommands =
-                    List.map (getUserInfo model.flags.apiKey) usersList
-
-                commands =
-                    changePage (LeaderboardRoute plusString) :: usersCommands
             in
-                ( { model | users = [] }, Cmd.batch commands )
+                ( { model | users = [] }, changePage (LeaderboardRoute plusString) )
 
         OnFetchUser (Ok user) ->
             ( { model | users = user :: model.users }, getScrobbleCount model.flags.apiKey user )
@@ -87,3 +90,18 @@ update msg model =
 
         OnFetchRecentTracks _ _ ->
             ( { model | error = "Error fetching recent tracks" }, Cmd.none )
+
+
+getUserInfoCommands : Model -> Cmd Msg
+getUserInfoCommands model =
+    let
+        usersList =
+            model.usersString
+                |> String.words
+                |> String.join ""
+                |> String.split ","
+
+        usersCommands =
+            List.map (getUserInfo model.flags.apiKey) usersList
+    in
+        Cmd.batch usersCommands
