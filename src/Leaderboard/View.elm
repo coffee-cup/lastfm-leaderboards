@@ -1,7 +1,7 @@
 module Leaderboard.View exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, href, classList, src)
+import Html.Attributes exposing (class, href, classList, src, target)
 import Types.User exposing (User)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
@@ -26,13 +26,19 @@ introView =
 
 userView : User -> Html Msg
 userView user =
-    div [ class ("user pv3 flex ac " ++ user.name) ]
-        [ userImage user
-        , div []
-            [ p [ class "f3 mr4 mv0" ] [ text user.name ]
-            , countView user.playcount
+    let
+        userUrl =
+            user.url ++ "/library?date_preset=LAST_7_DAYS"
+    in
+        a [ href userUrl, class "none", target "_blank" ]
+            [ div [ class ("user pv3 flex ac " ++ user.name) ]
+                [ userImage user
+                , div []
+                    [ p [ class "f3 mr4 mv0" ] [ text user.name ]
+                    , countView user.playcount
+                    ]
+                ]
             ]
-        ]
 
 
 userImage : User -> Html Msg

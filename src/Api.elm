@@ -9,7 +9,7 @@ import Types.User exposing (User)
 
 type Route
     = UserInfo String
-    | RecentTracks User
+    | RecentTracks User Int
 
 
 type alias ApiKey =
@@ -26,9 +26,9 @@ getUserInfo apiKey name =
         |> Http.send OnFetchUser
 
 
-getScrobbleCount : ApiKey -> User -> Cmd Msg
-getScrobbleCount apiKey user =
-    Http.get (routeToString apiKey (RecentTracks user)) decodeRecentTracks
+getScrobbleCount : ApiKey -> User -> Int -> Cmd Msg
+getScrobbleCount apiKey user since =
+    Http.get (routeToString apiKey (RecentTracks user since)) decodeRecentTracks
         |> Http.send (OnFetchRecentTracks user)
 
 
@@ -58,7 +58,7 @@ routeToString apiKey route =
             in
                 apiUrl ++ queryParams
 
-        RecentTracks user ->
+        RecentTracks user since ->
             let
                 queryParams =
                     queryParamBuilder
@@ -68,7 +68,7 @@ routeToString apiKey route =
                         , ( "limit", "200" )
                         , ( "page", "1" )
                         , ( "user", user.name )
-                        , ( "from", "1509578304" )
+                        , ( "from", toString since )
                         ]
             in
                 apiUrl ++ queryParams
@@ -84,6 +84,7 @@ decodeUserInfo =
         succeed User
             |: (at [ "image" ] <| index 2 <| field "#text" string)
             |: (field "name" string)
+            |: (field "url" string)
             |: (succeed Nothing)
 
 

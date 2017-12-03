@@ -5,6 +5,7 @@ import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
 import Utils exposing (..)
+import Types.User exposing (User)
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -68,7 +69,7 @@ update msg model =
                 ( { model | users = [] }, changePage (LeaderboardRoute plusString) )
 
         OnFetchUser (Ok user) ->
-            ( { model | users = user :: model.users }, getScrobbleCount model.flags.apiKey user )
+            ( { model | users = user :: model.users }, getUserPlayCount model user )
 
         OnFetchUser (Err _) ->
             ( { model | error = "Error fetching user" }, Cmd.none )
@@ -90,6 +91,15 @@ update msg model =
 
         OnFetchRecentTracks _ _ ->
             ( { model | error = "Error fetching recent tracks" }, Cmd.none )
+
+
+getUserPlayCount : Model -> User -> Cmd Msg
+getUserPlayCount model user =
+    let
+        aWeekAgo =
+            weekAgo model.flags.now
+    in
+        getScrobbleCount model.flags.apiKey user aWeekAgo
 
 
 getUserInfoCommands : Model -> Cmd Msg

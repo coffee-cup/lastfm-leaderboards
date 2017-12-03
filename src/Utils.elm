@@ -49,3 +49,12 @@ flippedComparison a b =
 
         GT ->
             LT
+
+
+weekAgo : Int -> Int
+weekAgo time =
+    let
+        delta =
+            24 * 60 * 60 * 7
+    in
+        time - delta
