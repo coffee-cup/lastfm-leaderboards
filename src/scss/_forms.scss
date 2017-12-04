@@ -28,7 +28,8 @@ button,
 }
 
 .input-group {
-  display: flex;
+  display  : flex;
+  max-width: 36rem;
 
   &--rightButton {
     input {
