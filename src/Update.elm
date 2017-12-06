@@ -6,6 +6,7 @@ import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
 import Utils exposing (..)
 import Types.User exposing (User)
+import Debug
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -81,11 +82,11 @@ update msg model =
                         |> List.map
                             (\u ->
                                 if u.name == newUser.name then
-                                    newUser
+                                    Debug.log "user" newUser
                                 else
                                     u
                             )
-                        |> sortByFlip .playcount
+                        |> sortByFlip .playCount
             in
                 ( { model | users = newUsers }, Cmd.none )
 

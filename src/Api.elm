@@ -96,6 +96,8 @@ decodeRecentTracks user =
     in
         succeed updateUserWithTracks_
             |: (at [ "recenttracks", "@attr" ] <| (field "total" number))
+            |: (at [ "recenttracks", "@attr" ] <| (field "page" number))
+            |: (at [ "recenttracks", "@attr" ] <| (field "totalPages" number))
             |: (at [ "recenttracks", "track" ] <| (list decodeTrack))
 
 
