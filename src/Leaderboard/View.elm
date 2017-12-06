@@ -37,7 +37,6 @@ userView user =
                 , div []
                     [ p [ class "f3 mr4 mv0" ] [ text user.name ]
                     , countView user.playCount
-                    , latestTrackInfo user.tracks
                     ]
                 ]
             ]

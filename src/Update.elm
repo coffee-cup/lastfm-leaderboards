@@ -4,9 +4,9 @@ import Api exposing (getUserInfo, getScrobbleCount)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
+import Navigation exposing (Location)
 import Utils exposing (..)
 import Types.User exposing (User)
-import Debug
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -32,20 +32,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnLocationChange location ->
-            let
-                newRoute =
-                    parseLocation location
-
-                newUsersString =
-                    routeToUsersString newRoute
-
-                newModel =
-                    { model | usersString = newUsersString, users = [] }
-
-                usersCommands =
-                    getUserInfoCommands newModel
-            in
-                ( { newModel | route = newRoute }, usersCommands )
+            locationChange location model
 
         ShowHome ->
             ( model, changePage HomeRoute )
@@ -57,17 +44,9 @@ update msg model =
             ( { model | usersString = usersString }, Cmd.none )
 
         ShowLeaderboard ->
-            let
-                usersList =
-                    model.usersString
-                        |> String.words
-                        |> String.join ""
-                        |> String.split ","
-
-                plusString =
-                    usersList |> String.join "+"
-            in
-                ( { model | users = [] }, changePage (LeaderboardRoute plusString) )
+            ( { model | users = [] }
+            , changePage <| LeaderboardRoute <| usersCommaStringToPlusString <| model.usersString
+            )
 
         OnFetchUser (Ok user) ->
             ( { model | users = user :: model.users }, getUserPlayCount model user )
@@ -76,22 +55,21 @@ update msg model =
             ( { model | error = "Error fetching user" }, Cmd.none )
 
         OnFetchRecentTracks (Ok newUser) ->
-            let
-                newUsers =
-                    model.users
-                        |> List.map
-                            (\u ->
-                                if u.name == newUser.name then
-                                    Debug.log "user" newUser
-                                else
-                                    u
-                            )
-                        |> sortByFlip .playCount
-            in
-                ( { model | users = newUsers }, Cmd.none )
+            fetchedTracksForUser newUser model
 
         OnFetchRecentTracks _ ->
             ( { model | error = "Error fetching recent tracks" }, Cmd.none )
+
+
+fetchedTracksForUser : User -> Model -> ( Model, Cmd Msg )
+fetchedTracksForUser newUser model =
+    let
+        newUsers =
+            model.users
+                |> replaceItemInList .name newUser
+                |> sortByFlip .playCount
+    in
+        ( { model | users = newUsers }, Cmd.none )
 
 
 getUserPlayCount : Model -> User -> Cmd Msg
@@ -106,13 +84,29 @@ getUserPlayCount model user =
 getUserInfoCommands : Model -> Cmd Msg
 getUserInfoCommands model =
     let
-        usersList =
-            model.usersString
-                |> String.words
-                |> String.join ""
-                |> String.split ","
-
         usersCommands =
-            List.map (getUserInfo model.flags.apiKey) usersList
+            List.map (getUserInfo model.flags.apiKey) (usersCommaStringToList model.usersString)
     in
         Cmd.batch usersCommands
+
+
+locationChange : Location -> Model -> ( Model, Cmd Msg )
+locationChange location model =
+    let
+        newRoute =
+            parseLocation location
+
+        newUsersString =
+            routeToUsersString newRoute
+
+        newModel =
+            { model
+                | usersString = newUsersString
+                , route = newRoute
+                , users = []
+            }
+
+        usersCommands =
+            getUserInfoCommands newModel
+    in
+        ( newModel, usersCommands )

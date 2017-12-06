@@ -3,18 +3,6 @@ module Utils exposing (..)
 import Routing exposing (Sitemap(..))
 
 
-routeToUsersString : Sitemap -> String
-routeToUsersString sitemap =
-    case sitemap of
-        LeaderboardRoute usersString ->
-            usersString
-                |> String.split "+"
-                |> String.join ", "
-
-        _ ->
-            ""
-
-
 classify : String -> String
 classify s =
     s
@@ -31,6 +19,40 @@ boolToInt b =
 
         False ->
             0
+
+
+weekAgo : Int -> Int
+weekAgo time =
+    let
+        delta =
+            24 * 60 * 60 * 7
+    in
+        time - delta
+
+
+routeToUsersString : Sitemap -> String
+routeToUsersString sitemap =
+    case sitemap of
+        LeaderboardRoute usersString ->
+            usersString
+                |> String.split "+"
+                |> String.join ", "
+
+        _ ->
+            ""
+
+
+usersCommaStringToList : String -> List String
+usersCommaStringToList s =
+    s
+        |> String.words
+        |> String.join ""
+        |> String.split ","
+
+
+usersCommaStringToPlusString : String -> String
+usersCommaStringToPlusString s =
+    s |> usersCommaStringToList |> String.join "+"
 
 
 sortByFlip : (a -> comparable) -> List a -> List a
@@ -51,10 +73,13 @@ flippedComparison a b =
             LT
 
 
-weekAgo : Int -> Int
-weekAgo time =
-    let
-        delta =
-            24 * 60 * 60 * 7
-    in
-        time - delta
+replaceItemInList : (a -> comparable) -> a -> List a -> List a
+replaceItemInList f newItem l =
+    l
+        |> List.map
+            (\i ->
+                if f i == f newItem then
+                    newItem
+                else
+                    i
+            )
