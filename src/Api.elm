@@ -4,7 +4,8 @@ import Http
 import Json.Decode as Decode exposing (..)
 import Json.Decode.Extra as Decode exposing (..)
 import Messages exposing (Msg(..))
-import Types.User exposing (User)
+import Types.User exposing (User, userFromInfo, updateUserWithTracks)
+import Types.Track exposing (Track)
 
 
 type Route
@@ -28,8 +29,8 @@ getUserInfo apiKey name =
 
 getScrobbleCount : ApiKey -> User -> Int -> Cmd Msg
 getScrobbleCount apiKey user since =
-    Http.get (routeToString apiKey (RecentTracks user since)) decodeRecentTracks
-        |> Http.send (OnFetchRecentTracks user)
+    Http.get (routeToString apiKey (RecentTracks user since)) (decodeRecentTracks user)
+        |> Http.send OnFetchRecentTracks
 
 
 apiUrl : String
@@ -81,17 +82,30 @@ routeToString apiKey route =
 decodeUserInfo : Decoder User
 decodeUserInfo =
     at [ "user" ] <|
-        succeed User
+        succeed userFromInfo
             |: (at [ "image" ] <| index 2 <| field "#text" string)
             |: (field "name" string)
             |: (field "url" string)
-            |: (succeed Nothing)
 
 
-decodeRecentTracks : Decoder Int
-decodeRecentTracks =
-    at [ "recenttracks", "@attr" ] <|
-        (field "total" number)
+decodeRecentTracks : User -> Decoder User
+decodeRecentTracks user =
+    let
+        updateUserWithTracks_ =
+            updateUserWithTracks user
+    in
+        succeed updateUserWithTracks_
+            |: (at [ "recenttracks", "@attr" ] <| (field "total" number))
+            |: (at [ "recenttracks", "track" ] <| (list decodeTrack))
+
+
+decodeTrack : Decoder Track
+decodeTrack =
+    succeed Track
+        |: (field "name" string)
+        |: (at [ "artist" ] <| (field "#text" string))
+        |: (at [ "album" ] <| (field "#text" string))
+        |: (field "url" string)
 
 
 number : Decoder Int

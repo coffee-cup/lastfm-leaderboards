@@ -74,22 +74,22 @@ update msg model =
         OnFetchUser (Err _) ->
             ( { model | error = "Error fetching user" }, Cmd.none )
 
-        OnFetchRecentTracks user (Ok playcount) ->
+        OnFetchRecentTracks (Ok newUser) ->
             let
                 newUsers =
                     model.users
                         |> List.map
                             (\u ->
-                                if u.name == user.name then
-                                    { u | playcount = Just playcount }
+                                if u.name == newUser.name then
+                                    newUser
                                 else
                                     u
                             )
-                        |> sortByFlip (\u -> Maybe.withDefault 0 u.playcount)
+                        |> sortByFlip .playcount
             in
                 ( { model | users = newUsers }, Cmd.none )
 
-        OnFetchRecentTracks _ _ ->
+        OnFetchRecentTracks _ ->
             ( { model | error = "Error fetching recent tracks" }, Cmd.none )
 
 

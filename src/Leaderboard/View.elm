@@ -3,6 +3,7 @@ module Leaderboard.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, classList, src, target)
 import Types.User exposing (User)
+import Types.Track exposing (Track, emptyTrack)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 
@@ -36,9 +37,19 @@ userView user =
                 , div []
                     [ p [ class "f3 mr4 mv0" ] [ text user.name ]
                     , countView user.playcount
+                    , latestTrackInfo user.tracks
                     ]
                 ]
             ]
+
+
+latestTrackInfo : List Track -> Html Msg
+latestTrackInfo tracks =
+    let
+        t =
+            Maybe.withDefault emptyTrack (List.head tracks)
+    in
+        p [] [ text t.name ]
 
 
 userImage : User -> Html Msg
@@ -55,14 +66,10 @@ userImage user =
         img [ src imageUrl, class "user-image mr4" ] []
 
 
-countView : Maybe Int -> Html Msg
-countView mcount =
-    let
-        scount =
-            toString <| Maybe.withDefault 0 mcount
-    in
-        p [ class "user-scobble-count f5 flex ac mv0 text-lightgray" ]
-            [ text (scount ++ " scrobbles") ]
+countView : Int -> Html Msg
+countView pcount =
+    p [ class "user-scobble-count f5 flex ac mv0 text-lightgray" ]
+        [ text ((toString pcount) ++ " scrobbles") ]
 
 
 errorView : Model -> Html Msg
