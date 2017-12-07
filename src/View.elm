@@ -88,7 +88,7 @@ nameInput model =
 
 footer : Html Msg
 footer =
-    div [ class "footer pb6" ]
+    div [ class "footer pv5" ]
         [ p [ class "f5" ]
             [ text "made with ♥ by "
             , a [ href "https://jakerunzer.com", class "pointer" ]
