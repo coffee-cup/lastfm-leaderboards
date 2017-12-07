@@ -7,10 +7,13 @@ type alias User =
     { image : String
     , name : String
     , url : String
-    , playCount : Int
     , page : Int
     , totalPages : Int
     , tracks : List Track
+    , playCount : Int
+    , artistCount : Int
+    , albumCount : Int
+    , trackCount : Int
     }
 
 
@@ -19,18 +22,21 @@ userFromInfo image name url =
     { image = image
     , name = name
     , url = url
-    , playCount = 0
     , page = 0
     , totalPages = 0
     , tracks = []
+    , playCount = 0
+    , artistCount = 0
+    , albumCount = 0
+    , trackCount = 0
     }
 
 
 updateUserWithTracks : User -> Int -> Int -> Int -> List Track -> User
 updateUserWithTracks user playCount page totalPages tracks =
     { user
-        | playCount = playCount
-        , page = page
+        | page = page
         , totalPages = totalPages
         , tracks = user.tracks ++ tracks
+        , playCount = playCount
     }

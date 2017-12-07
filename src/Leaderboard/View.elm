@@ -3,7 +3,6 @@ module Leaderboard.View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, classList, src, target)
 import Types.User exposing (User)
-import Types.Track exposing (Track, emptyTrack)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Utils exposing (..)
@@ -21,24 +20,52 @@ type alias Leaderboard =
     }
 
 
+scrobbleLeaderboard : Leaderboard
 scrobbleLeaderboard =
     { id = "scobbles"
-    , title = "Top Scrobbles"
+    , title = "Total Scrobbles"
     , urlSuffix = "/library?date_preset=LAST_7_DAYS"
     , rankFn = \u -> ( u.playCount, (toString u.playCount) ++ " scrobbles" )
     }
 
 
+artistLeaderboard : Leaderboard
+artistLeaderboard =
+    { id = "artists"
+    , title = "Unique Artists"
+    , urlSuffix = "/library/artists?date_preset=LAST_7_DAYS"
+    , rankFn = \u -> ( u.artistCount, (toString u.artistCount) ++ " artists" )
+    }
+
+
+albumLeaderboard : Leaderboard
+albumLeaderboard =
+    { id = "albums"
+    , title = "Unique Albums"
+    , urlSuffix = "/library/albums?date_preset=LAST_7_DAYS"
+    , rankFn = \u -> ( u.albumCount, (toString u.albumCount) ++ " albums" )
+    }
+
+
+trackLeaderboard : Leaderboard
+trackLeaderboard =
+    { id = "artists"
+    , title = "Unique Tracks"
+    , urlSuffix = "/library/tracks?date_preset=LAST_7_DAYS"
+    , rankFn = \u -> ( u.trackCount, (toString u.trackCount) ++ " tracks" )
+    }
+
+
 leaderboardList : List Leaderboard
 leaderboardList =
-    [ scrobbleLeaderboard ]
+    [ scrobbleLeaderboard, artistLeaderboard, albumLeaderboard, trackLeaderboard ]
 
 
 view : Model -> Html Msg
 view model =
     div [ class "leaderboards" ]
         [ introView
-        , div [ class "flex pv2" ]
+        , div [ class "flex-w pv2" ]
             (List.map (leaderboardView model.users) leaderboardList)
         ]
 
@@ -46,7 +73,7 @@ view model =
 introView : Html Msg
 introView =
     div [ class "intro" ]
-        [ p [ class "measure text-lightgray" ]
+        [ p [ class "measure text-lightgray mb0" ]
             [ text "Based on last 7 days of listening" ]
         ]
 
@@ -67,8 +94,8 @@ leaderboardView users leaderboard =
         sortedUsers =
             sortByFlip compareFn users
     in
-        div [ class "leaderboard pr2" ]
-            [ h3 [ class "f3 mt0" ] [ text leaderboard.title ]
+        div [ class <| "leaderboard pr2 " ++ leaderboard.id ]
+            [ h3 [ class "f3 mb1" ] [ text leaderboard.title ]
             , div []
                 (List.map userView_ sortedUsers)
             ]
@@ -86,8 +113,8 @@ userView displayFn suffix user =
         a [ href userUrl, class "none", target "_blank" ]
             [ div [ class ("user pv3 flex ac " ++ user.name) ]
                 [ userImage user
-                , div []
-                    [ p [ class "f3 mr4 mv0" ] [ text user.name ]
+                , div [ class "mr5" ]
+                    [ p [ class "f3 mv0" ] [ text user.name ]
                     , p [ class "f5 flex ac mv0 text-lightgray" ]
                         [ text displayText ]
                     ]

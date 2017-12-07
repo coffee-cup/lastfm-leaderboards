@@ -7,6 +7,7 @@ import Routing exposing (parseLocation, navigateTo, Sitemap(..))
 import Navigation exposing (Location)
 import Utils exposing (..)
 import Types.User exposing (User)
+import Stats exposing (uniqueArtists, uniqueAlbums, uniqueTracks)
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -62,8 +63,14 @@ update msg model =
 
 
 fetchedTracksForUser : User -> Model -> ( Model, Cmd Msg )
-fetchedTracksForUser newUser model =
+fetchedTracksForUser user model =
     let
+        newUser =
+            if user.page >= user.totalPages then
+                calculateUserStats user
+            else
+                user
+
         newUsers =
             model.users
                 |> replaceItemInList .name newUser
@@ -76,6 +83,15 @@ fetchedTracksForUser newUser model =
                 Cmd.none
     in
         ( { model | users = newUsers }, newCmd )
+
+
+calculateUserStats : User -> User
+calculateUserStats user =
+    { user
+        | artistCount = uniqueArtists user
+        , albumCount = uniqueAlbums user
+        , trackCount = uniqueTracks user
+    }
 
 
 getUserTracks : Model -> User -> Int -> Cmd Msg
