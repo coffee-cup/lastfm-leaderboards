@@ -13,11 +13,25 @@ type alias Title =
     String
 
 
-leaderboardList : List ( Title, User -> ( Int, String ) )
+type alias Leaderboard =
+    { id : String
+    , title : String
+    , urlSuffix : String
+    , rankFn : User -> ( Int, String )
+    }
+
+
+scrobbleLeaderboard =
+    { id = "scobbles"
+    , title = "Top Scrobbles"
+    , urlSuffix = "/library?date_preset=LAST_7_DAYS"
+    , rankFn = \u -> ( u.playCount, (toString u.playCount) ++ " scrobbles" )
+    }
+
+
+leaderboardList : List Leaderboard
 leaderboardList =
-    [ ( "Top Scrobbles", \u -> ( u.playCount, (toString u.playCount) ++ " scrobbles" ) )
-    , ( "Top Scrobbles", \u -> ( u.playCount, (toString u.playCount) ++ " scrobbles" ) )
-    ]
+    [ scrobbleLeaderboard ]
 
 
 view : Model -> Html Msg
@@ -25,7 +39,7 @@ view model =
     div [ class "leaderboards" ]
         [ introView
         , div [ class "flex pv2" ]
-            (List.map (\( t, f ) -> leaderboardView f t model.users) leaderboardList)
+            (List.map (leaderboardView model.users) leaderboardList)
         ]
 
 
@@ -37,30 +51,34 @@ introView =
         ]
 
 
-leaderboardView : (User -> ( comparable, String )) -> Title -> List User -> Html Msg
-leaderboardView rankFn title users =
+leaderboardView : List User -> Leaderboard -> Html Msg
+leaderboardView users leaderboard =
     let
         compareFn =
-            rankFn >> Tuple.first
+            leaderboard.rankFn >> Tuple.first
+
+        displayFn =
+            leaderboard.rankFn >> Tuple.second
 
         userView_ =
-            userView <| rankFn >> Tuple.second
+            userView displayFn leaderboard.urlSuffix
 
+        sortedUsers : List User
         sortedUsers =
             sortByFlip compareFn users
     in
         div [ class "leaderboard pr2" ]
-            [ h3 [ class "f3 mt0" ] [ text title ]
+            [ h3 [ class "f3 mt0" ] [ text leaderboard.title ]
             , div []
                 (List.map userView_ sortedUsers)
             ]
 
 
-userView : (User -> String) -> User -> Html Msg
-userView displayFn user =
+userView : (User -> String) -> String -> User -> Html Msg
+userView displayFn suffix user =
     let
         userUrl =
-            user.url ++ "/library?date_preset=LAST_7_DAYS"
+            user.url ++ suffix
 
         displayText =
             displayFn user
