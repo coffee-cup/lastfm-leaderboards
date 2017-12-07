@@ -1,6 +1,6 @@
 port module Update exposing (..)
 
-import Api exposing (getUserInfo, getScrobbleCount)
+import Api exposing (getUserInfo, getRecentTracks)
 import Messages exposing (Msg(..))
 import Models exposing (Model)
 import Routing exposing (parseLocation, navigateTo, Sitemap(..))
@@ -49,7 +49,7 @@ update msg model =
             )
 
         OnFetchUser (Ok user) ->
-            ( { model | users = user :: model.users }, getUserPlayCount model user )
+            ( { model | users = user :: model.users }, getUserTracks model user 1 )
 
         OnFetchUser (Err _) ->
             ( { model | error = "Error fetching user" }, Cmd.none )
@@ -68,17 +68,23 @@ fetchedTracksForUser newUser model =
             model.users
                 |> replaceItemInList .name newUser
                 |> sortByFlip .playCount
+
+        newCmd =
+            if newUser.page < newUser.totalPages then
+                getUserTracks model newUser (newUser.page + 1)
+            else
+                Cmd.none
     in
-        ( { model | users = newUsers }, Cmd.none )
+        ( { model | users = newUsers }, newCmd )
 
 
-getUserPlayCount : Model -> User -> Cmd Msg
-getUserPlayCount model user =
+getUserTracks : Model -> User -> Int -> Cmd Msg
+getUserTracks model user page =
     let
         aWeekAgo =
             weekAgo model.flags.now
     in
-        getScrobbleCount model.flags.apiKey user aWeekAgo
+        getRecentTracks model.flags.apiKey user aWeekAgo page
 
 
 getUserInfoCommands : Model -> Cmd Msg

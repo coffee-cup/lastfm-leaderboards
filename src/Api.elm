@@ -1,4 +1,4 @@
-module Api exposing (getUserInfo, getScrobbleCount)
+module Api exposing (getUserInfo, getRecentTracks)
 
 import Http
 import Json.Decode as Decode exposing (..)
@@ -10,7 +10,7 @@ import Types.Track exposing (Track)
 
 type Route
     = UserInfo String
-    | RecentTracks User Int
+    | RecentTracks User Int Int
 
 
 type alias ApiKey =
@@ -27,9 +27,9 @@ getUserInfo apiKey name =
         |> Http.send OnFetchUser
 
 
-getScrobbleCount : ApiKey -> User -> Int -> Cmd Msg
-getScrobbleCount apiKey user since =
-    Http.get (routeToString apiKey (RecentTracks user since)) (decodeRecentTracks user)
+getRecentTracks : ApiKey -> User -> Int -> Int -> Cmd Msg
+getRecentTracks apiKey user since page =
+    Http.get (routeToString apiKey (RecentTracks user since page)) (decodeRecentTracks user)
         |> Http.send OnFetchRecentTracks
 
 
@@ -59,7 +59,7 @@ routeToString apiKey route =
             in
                 apiUrl ++ queryParams
 
-        RecentTracks user since ->
+        RecentTracks user since page ->
             let
                 queryParams =
                     queryParamBuilder
@@ -67,7 +67,7 @@ routeToString apiKey route =
                         , ( "format", "json" )
                         , ( "api_key", apiKey )
                         , ( "limit", "200" )
-                        , ( "page", "1" )
+                        , ( "page", toString page )
                         , ( "user", user.name )
                         , ( "from", toString since )
                         ]

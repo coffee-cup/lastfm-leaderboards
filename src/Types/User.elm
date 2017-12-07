@@ -32,5 +32,5 @@ updateUserWithTracks user playCount page totalPages tracks =
         | playCount = playCount
         , page = page
         , totalPages = totalPages
-        , tracks = tracks
+        , tracks = user.tracks ++ tracks
     }
