@@ -95,7 +95,7 @@ leaderboardView users leaderboard =
             sortByFlip compareFn users
     in
         div [ class <| "leaderboard pr2 " ++ leaderboard.id ]
-            [ h3 [ class "f3 mb1" ] [ text leaderboard.title ]
+            [ h2 [ class "f3 mb1" ] [ text leaderboard.title ]
             , div []
                 (List.map userView_ sortedUsers)
             ]
