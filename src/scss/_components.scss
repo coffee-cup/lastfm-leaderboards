@@ -1,4 +1,6 @@
 .user {
+  width: 20rem;
+
   &-image {
     --image-size : 4rem;
     max-width    : var(--image-size);

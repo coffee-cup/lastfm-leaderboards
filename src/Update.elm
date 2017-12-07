@@ -7,7 +7,15 @@ import Routing exposing (parseLocation, navigateTo, Sitemap(..))
 import Navigation exposing (Location)
 import Utils exposing (..)
 import Types.User exposing (User)
-import Stats exposing (uniqueArtists, uniqueAlbums, uniqueTracks)
+import Stats
+    exposing
+        ( uniqueArtists
+        , uniqueAlbums
+        , uniqueTracks
+        , sameArtist
+        , sameAlbum
+        , sameTrack
+        )
 
 
 port scrollToTop : Bool -> Cmd msg
@@ -91,6 +99,9 @@ calculateUserStats user =
         | artistCount = uniqueArtists user
         , albumCount = uniqueAlbums user
         , trackCount = uniqueTracks user
+        , sameArtist = sameArtist user
+        , sameAlbum = sameAlbum user
+        , sameTrack = sameTrack user
     }
 
 

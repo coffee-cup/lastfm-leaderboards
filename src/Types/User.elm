@@ -14,6 +14,9 @@ type alias User =
     , artistCount : Int
     , albumCount : Int
     , trackCount : Int
+    , sameArtist : ( String, Int )
+    , sameAlbum : ( String, Int )
+    , sameTrack : ( String, Int )
     }
 
 
@@ -29,6 +32,9 @@ userFromInfo image name url =
     , artistCount = 0
     , albumCount = 0
     , trackCount = 0
+    , sameArtist = ( "", 0 )
+    , sameAlbum = ( "", 0 )
+    , sameTrack = ( "", 0 )
     }
 
 
