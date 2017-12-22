@@ -56,7 +56,7 @@ shortcuts : Html Msg
 shortcuts =
     let
         shortnames =
-            "coffee_cups+bigtunaflops+sp00kyluke+i_am_tyson+aleeshak"
+            "coffee_cups+bigtunaflops+sp00kyluke+aleeshak"
 
         shortnamesDisplay =
             shortnames
