@@ -57,16 +57,10 @@ shortcuts =
     let
         shortnames =
             "coffee_cups+bigtunaflops+sp00kyluke+aleeshak+i_am_tyson"
-
-        shortnamesDisplay =
-            shortnames
-                |> String.split "+"
-                |> String.join ", "
     in
-        div [ class "shortcuts pv2" ]
-            [ h3 [ class "f3" ] [ text "Shortcuts" ]
-            , a [ href <| "/lb/" ++ shortnames, class "none" ]
-                [ text shortnamesDisplay
+        div [ class "shortcuts pv4" ]
+            [ a [ href <| "/lb/" ++ shortnames, class "none" ]
+                [ text "friends"
                 ]
             ]
 
