@@ -44,7 +44,7 @@ p {
   line-height: $base-line-height;
 }
 
-a {
+a, a:visited {
   cursor         : pointer;
   transition     : 0.25s ease-in-out all;
   text-decoration: none;
