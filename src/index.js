@@ -27,10 +27,3 @@ app.ports.changeMetadata.subscribe(title => {
 app.ports.scrollToTop.subscribe(() => {
   window.scrollTo(0, 0);
 });
-
-// Google Analytics
-
-app.ports.pageView.subscribe(() => {
-  ga('set', 'page', location.pathname);
-  ga('send', 'pageview');
-});
