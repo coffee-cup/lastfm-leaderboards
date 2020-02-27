@@ -8,9 +8,7 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline --progress",
     "start": "npm run dev",
     "clean": "rimraf build",
-    "pages": "node metadata/metadata.js",
     "prebuild": "npm run clean",
-    "postbuild": "npm run pages",
     "predeploy": "npm run build",
     "test": "echo \"Error: no test specified\"",
     "heroku-postbuild": "npm run build"
